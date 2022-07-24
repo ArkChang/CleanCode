@@ -20,10 +20,16 @@ public class BooleanArgsDismantling {
 		valid = parse();
 	}
 
+	/**
+	 * @return 出現次數
+	 */
 	public int cardinality() {
 		return numberOfArguments;
 	}
 
+	/**
+	 * @return 查詢對象
+	 */
 	public String usage() {
 		if (schema.length() > 0)
 			return "-[" + schema + "]";
@@ -39,6 +45,9 @@ public class BooleanArgsDismantling {
 		}
 	}
 
+	/**
+	 * @return 規定參數是否存在
+	 */
 	public boolean getBoolean(char arg) {
 		return booleanArgs.get(arg);
 	}
