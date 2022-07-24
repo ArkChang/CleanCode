@@ -1,13 +1,12 @@
-package com.cleancode.chapter14.step1;
+package com.cleancode.chapter14.step2;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
-
 /**
- * Step.1 新增判斷指定參數是否存在
+ * Step.2 新增判斷
  * @author Ark Chang
  */
 public class Args {
