@@ -5,7 +5,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
-public class BooleanArgsDismantling {
+public class Args {
 
 	private String schema; // 格式
 	private String[] args; // 檢測參數
@@ -14,7 +14,7 @@ public class BooleanArgsDismantling {
 	private Set<Character> unexpectedArguments = new TreeSet<>(); // 不符合預期的參數
 	private Map<Character, Boolean> booleanArgs = new HashMap<>(); // 處理結果
 
-	public BooleanArgsDismantling(String schema, String[] args) {
+	public Args(String schema, String[] args) {
 		this.schema = schema;
 		this.args = args;
 		valid = parse();
