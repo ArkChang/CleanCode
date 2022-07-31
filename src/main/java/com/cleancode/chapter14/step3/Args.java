@@ -71,7 +71,8 @@ public class Args {
 	 * @return 規定參數是否存在
 	 */
 	public boolean getBoolean(char arg) {
-		return falseIfNull(booleanArgs.get(arg));
+		ArgumentMarshaler am = booleanArgs.get(arg);
+		return am != null && am.getBoolean();
 	}
 
 	/**
@@ -188,7 +189,7 @@ public class Args {
 	}
 
 	private void setBooleanArg(char argChar, boolean value) {
-		booleanArgs.put(argChar, value);
+		booleanArgs.get(argChar).setBoolean(value);
 	}
 
 	private boolean isString(char argChar) {
