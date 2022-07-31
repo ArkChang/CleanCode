@@ -224,7 +224,6 @@ public class Args {
 		return s == null ? "" : s;
 	}
 
-	// XXX 兩層Inner Class是好的寫法嗎?
 	private class ArgumentMarshaler {
 		private boolean booleanValue = false;
 
@@ -235,17 +234,18 @@ public class Args {
 		public boolean getBoolean() {
 			return booleanValue;
 		}
+	}
+	
+	// 修正課本錯誤，兩層Inner Class會不讀到
+	private class BooleanArgumentMarshaler extends ArgumentMarshaler {
 
-		private class BooleanArgumentMarshaler extends ArgumentMarshaler {
+	}
 
-		}
+	private class StringArgumentMarshaler extends ArgumentMarshaler {
 
-		private class StringArgumentMarshaler extends ArgumentMarshaler {
+	}
 
-		}
+	private class IntegerArgumentMarshaler extends ArgumentMarshaler {
 
-		private class IntegerArgumentMarshaler extends ArgumentMarshaler {
-
-		}
 	}
 }
