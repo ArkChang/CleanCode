@@ -19,6 +19,19 @@ public class ArgsTest {
 	}
 
 	@Test
+	public void testBoolean_by_KeyisNull() throws Exception {
+		Args args = new Args("", new String[] { "-y" });
+
+		assertEquals(0, args.cardinality());
+		assertEquals("Argument(s) -y unexpected.", args.errorMessage());
+		assertEquals("", args.usage());
+		assertFalse(args.getBoolean('y'));
+		assertFalse(args.has('x'));
+		assertFalse(args.isValid());
+
+	}
+
+	@Test
 	public void testBoolean_by_parameterNotIncludedKey() throws Exception {
 		Args args = new Args("x", new String[] { "-p" });
 
@@ -102,4 +115,66 @@ public class ArgsTest {
 //		});
 	}
 
+	@Test
+	public void testString_by_KeyisNull() throws Exception {
+
+		try {
+			Args args = new Args("*", new String[] { "-y" });
+		} catch (ParseException e) {
+			assertEquals("Bad character:*in Args format:*", e.getMessage());
+		}
+
+	}
+
+	@Test
+	public void testString_by_parameterIncludedKey() throws ParseException {
+		Args args = new Args("x*", new String[] { "-x" });
+
+		assertEquals(1, args.cardinality());
+		assertEquals("-[x*]", args.usage());
+		assertEquals("-x", args.getString('x'));
+		assertTrue(args.has('x'));
+		assertTrue(args.isValid());
+	}
+
+	@Test
+	public void testString_by_parameterNotIncludedKey() throws Exception {
+		Args args = new Args("x*", new String[] { "-p" });
+
+		assertEquals(0, args.cardinality());
+		assertEquals("Argument(s) -p unexpected.", args.errorMessage());
+		assertEquals("-[x*]", args.usage());
+		assertEquals("", args.getString('x'));
+		assertFalse(args.has('x'));
+		assertFalse(args.isValid());
+
+	}
+
+	@Test
+	public void testString_by_keyShowTwiceInParameter() throws Exception {
+		Args args = new Args("x*", new String[] { "-x", "-x" });
+
+		assertEquals(1, args.cardinality());
+		assertEquals("-[x*]", args.usage());
+		assertEquals("-x", args.getString('x'));
+		assertTrue(args.has('x'));
+		assertTrue(args.isValid());
+	}
+
+	@Test
+	public void testString_by_OneRightOneFaultInParameter() throws Exception {
+		Args args = new Args("x*", new String[] { "-x", "-y" });
+
+		assertEquals(1, args.cardinality());
+		try {
+			args.errorMessage();
+		} catch (Exception e) {
+			// 錯誤流程，應該要是Argument(s) -y unexpected.
+			assertEquals("TILT: Should not get here.", e.getMessage());
+		}
+		assertEquals("-[x*]", args.usage());
+		assertEquals("-x", args.getString('x'));
+		assertTrue(args.has('x'));
+		assertTrue(args.isValid());
+	}
 }
