@@ -18,7 +18,7 @@ public class Args {
 	private String[] args; // 檢測參數
 	private boolean valid = true; // 執行結果
 	private Set<Character> unexpectedArguments = new TreeSet<>(); // 不符合預期的參數
-	private Map<Character, Boolean> booleanArgs = new HashMap<>(); // 是否存在的處理結果
+	private Map<Character, ArgumentMarshaler> booleanArgs = new HashMap<>(); // 是否存在的處理結果
 	private Map<Character, String> stringArgs = new HashMap<>(); // 已存在的字串處理結果
 	private Set<Character> argsFound = new HashSet<>(); // 陣列數
 	private int currentArgument;
@@ -135,7 +135,7 @@ public class Args {
 	}
 
 	private void parseBooleanSchemaElement(char elementId) {
-		booleanArgs.put(elementId, false);
+		booleanArgs.put(elementId, new BooleanArgumentMarshaler());
 	}
 
 	private void parseStringSchemaElement(char elementId) {
@@ -222,5 +222,30 @@ public class Args {
 
 	private String blankIfNull(String s) {
 		return s == null ? "" : s;
+	}
+
+	// XXX 兩層Inner Class是好的寫法嗎?
+	private class ArgumentMarshaler {
+		private boolean booleanValue = false;
+
+		public void setBoolean(boolean value) {
+			booleanValue = value;
+		}
+
+		public boolean getBoolean() {
+			return booleanValue;
+		}
+
+		private class BooleanArgumentMarshaler extends ArgumentMarshaler {
+
+		}
+
+		private class StringArgumentMarshaler extends ArgumentMarshaler {
+
+		}
+
+		private class IntegerArgumentMarshaler extends ArgumentMarshaler {
+
+		}
 	}
 }
