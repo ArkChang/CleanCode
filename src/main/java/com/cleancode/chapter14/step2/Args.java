@@ -196,7 +196,6 @@ public class Args {
 	}
 
 	private void setStringArg(char argChar, String value) {
-		currentArgument++;
 
 		try {
 			stringArgs.put(argChar, args[currentArgument]);
@@ -205,7 +204,7 @@ public class Args {
 			errorArgument = argChar;
 			errorCode = ErrorCode.MISSING_STRING;
 		}
-
+		currentArgument++;
 	}
 
 	private String unexpectedArgumentMessage() {
