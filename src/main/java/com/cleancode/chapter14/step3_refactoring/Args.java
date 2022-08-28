@@ -19,10 +19,10 @@ public class Args {
 	private boolean valid = true; // 執行結果
 	private Set<Character> unexpectedArguments = new TreeSet<>(); // 不符合預期的參數
 	private Map<Character, ArgumentMarshaler> booleanArgs = new HashMap<>(); // 是否存在的處理結果
-	private Map<Character, String> stringArgs = new HashMap<>(); // 已存在的字串處理結果
+	private Map<Character, ArgumentMarshaler> stringArgs = new HashMap<>(); // 已存在的字串處理結果
 	private Set<Character> argsFound = new HashSet<>(); // 陣列數
 	private int currentArgument;
-	private char errorArgument = '\0'; // 錯誤的字串
+	private char errorArgumentId = '\0'; // 錯誤的字串
 
 	enum ErrorCode {
 		OK, MISSING_STRING
@@ -59,7 +59,7 @@ public class Args {
 		} else {
 			switch (errorCode) {
 			case MISSING_STRING:
-				return String.format("Could not find string parameter for -%c.", errorArgument);
+				return String.format("Could not find string parameter for -%c.", errorArgumentId);
 			case OK:
 				throw new Exception("TILT: Should not get here.");
 			}
@@ -79,7 +79,8 @@ public class Args {
 	 * @return 回傳存在的字串
 	 */
 	public String getString(char arg) {
-		return blankIfNull(stringArgs.get(arg));
+		ArgumentMarshaler am = stringArgs.get(arg);
+		return am == null ? "" : am.getString();
 	}
 
 	public boolean has(char arg) {
@@ -95,7 +96,11 @@ public class Args {
 			return true;
 		}
 		parseSchema();
-		parseArguments();
+		try {
+			parseArguments();
+		} catch (ArgsException e) {
+			e.printStackTrace();
+		}
 		return valid;
 	}
 
@@ -140,10 +145,10 @@ public class Args {
 	}
 
 	private void parseStringSchemaElement(char elementId) {
-		stringArgs.put(elementId, "");
+		stringArgs.put(elementId, new StringArgumentMarshaler());
 	}
 
-	private boolean parseArguments() {
+	private boolean parseArguments() throws ArgsException {
 		for (currentArgument = 0; currentArgument < args.length; currentArgument++) {
 			String arg = args[currentArgument];
 			parseArgument(arg);
@@ -151,19 +156,19 @@ public class Args {
 		return true;
 	}
 
-	private void parseArgument(String arg) {
+	private void parseArgument(String arg) throws ArgsException {
 		if (arg.startsWith("-")) {
 			parseElements(arg);
 		}
 	}
 
-	private void parseElements(String arg) {
+	private void parseElements(String arg) throws ArgsException {
 		for (int i = 1; i < arg.length(); i++) {
 			parseElement(arg.charAt(i));
 		}
 	}
 
-	private void parseElement(char argChar) {
+	private void parseElement(char argChar) throws ArgsException {
 		if (setArgument(argChar)) {
 			argsFound.add(argChar);
 		} else {
@@ -172,12 +177,12 @@ public class Args {
 		}
 	}
 
-	private boolean setArgument(char argChar) {
+	private boolean setArgument(char argChar) throws ArgsException {
 		boolean set = true;
 		if (isBoolean(argChar)) {
 			setBooleanArg(argChar, true);
 		} else if (isString(argChar)) {
-			setStringArg(argChar, "");
+			setStringArg(argChar);
 		} else {
 			set = false;
 		}
@@ -196,14 +201,14 @@ public class Args {
 		return stringArgs.containsKey(argChar);
 	}
 
-	private void setStringArg(char argChar, String value) {
-
+	private void setStringArg(char argChar) throws ArgsException {
 		try {
-			stringArgs.put(argChar, args[currentArgument]);
+			stringArgs.get(argChar).setString(args[currentArgument]);
 		} catch (ArrayIndexOutOfBoundsException e) {
 			valid = false;
-			errorArgument = argChar;
+			errorArgumentId = argChar;
 			errorCode = ErrorCode.MISSING_STRING;
+			throw new ArgsException();
 		}
 		currentArgument++;
 	}
@@ -221,22 +226,28 @@ public class Args {
 		return b == null ? false : b;
 	}
 
-	private String blankIfNull(String s) {
-		return s == null ? "" : s;
-	}
-
 	private class ArgumentMarshaler {
 		private boolean booleanValue = false;
+		private String stringValue;
 
 		public void setBoolean(boolean value) {
-			booleanValue = value;
+			this.booleanValue = value;
 		}
 
 		public boolean getBoolean() {
 			return booleanValue;
 		}
+
+		public void setString(String s) {
+			this.stringValue = s;
+		}
+
+		public String getString() {
+			return stringValue == null ? "" : stringValue;
+		}
+
 	}
-	
+
 	// 修正課本錯誤，兩層Inner Class會不讀到
 	private class BooleanArgumentMarshaler extends ArgumentMarshaler {
 
@@ -247,6 +258,10 @@ public class Args {
 	}
 
 	private class IntegerArgumentMarshaler extends ArgumentMarshaler {
-		
+
+	}
+
+	private class ArgsException extends Exception {
+
 	}
 }
