@@ -1,4 +1,4 @@
-package com.cleancode.chapter14.step3;
+package com.cleancode.chapter14.step3_refactoring;
 
 import java.text.ParseException;
 import java.util.HashMap;
@@ -247,6 +247,6 @@ public class Args {
 	}
 
 	private class IntegerArgumentMarshaler extends ArgumentMarshaler {
-
+		
 	}
 }

@@ -1,4 +1,4 @@
-package com.cleancode.chapter14.step1;
+package com.cleancode.chapter14.step1_create_booleanargs_marshaler;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -9,17 +9,17 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.Test;
 
-public class ArgsTest {
+class ArgsTest {
 
 	@Test
-	public void testSimpleBooleanPresent() {
+	void testSimpleBooleanPresent() {
 		Args args = new Args("x", new String[] { "-x" });
 		assertEquals(1, args.cardinality());
 		assertEquals(true, args.getBoolean('x'));
 	}
 
 	@Test
-	public void testBoolean_by_parameterNotIncludedKey() {
+	void testBoolean_by_parameterNotIncludedKey() {
 		Args args = new Args("x", new String[] { "-p" });
 
 		assertEquals(0, args.cardinality());
@@ -31,7 +31,7 @@ public class ArgsTest {
 	}
 
 	@Test
-	public void testBoolean_by_parameterIncludedKey() {
+	void testBoolean_by_parameterIncludedKey() {
 		Args args = new Args("x", new String[] { "-x" });
 
 		assertEquals(1, args.cardinality());
@@ -43,7 +43,7 @@ public class ArgsTest {
 	}
 
 	@Test
-	public void testBoolean_by_keyShowTwiceInParameter() {
+	void testBoolean_by_keyShowTwiceInParameter() {
 		Args args = new Args("x", new String[] { "-x", "-x" });
 
 		assertEquals(2, args.cardinality());
@@ -55,7 +55,7 @@ public class ArgsTest {
 	}
 
 	@Test
-	public void testBoolean_by_OneRightOneFaultInParameter() throws Exception {
+	void testBoolean_by_OneRightOneFaultInParameter() throws Exception {
 		Args args = new Args("x", new String[] { "-x", "-y" });
 
 		assertEquals(1, args.cardinality());
@@ -67,7 +67,7 @@ public class ArgsTest {
 	}
 	
 	@Test
-	public void testBoolean_by_parameterDoesntHaveDash() {
+	void testBoolean_by_parameterDoesntHaveDash() {
 		Args args = new Args("x", new String[] { "x" });
 
 		assertEquals(0, args.cardinality());
@@ -79,7 +79,7 @@ public class ArgsTest {
 	}
 
 	@Test
-	public void testBoolean_by_keyHaveDash() {
+	void testBoolean_by_keyHaveDash() {
 		Args args = new Args("-x", new String[] { "-x" });
 
 		assertEquals(0, args.cardinality());

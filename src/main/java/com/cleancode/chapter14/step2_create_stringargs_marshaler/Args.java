@@ -1,4 +1,4 @@
-package com.cleancode.chapter14.step2;
+package com.cleancode.chapter14.step2_create_stringargs_marshaler;
 
 import java.text.ParseException;
 import java.util.HashMap;

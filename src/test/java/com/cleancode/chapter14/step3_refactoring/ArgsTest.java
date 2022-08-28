@@ -1,4 +1,4 @@
-package com.cleancode.chapter14.step3;
+package com.cleancode.chapter14.step3_refactoring;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThrows;
@@ -9,17 +9,17 @@ import java.text.ParseException;
 
 import org.junit.jupiter.api.Test;
 
-public class ArgsTest {
+class ArgsTest {
 
 	@Test
-	public void testSimpleBooleanPresent() throws ParseException {
+	void testSimpleBooleanPresent() throws ParseException {
 		Args args = new Args("x", new String[] { "-x" });
 		assertEquals(1, args.cardinality());
 		assertEquals(true, args.getBoolean('x'));
 	}
 
 	@Test
-	public void testBoolean_by_KeyisNull() throws Exception {
+	void testBoolean_by_KeyisNull() throws Exception {
 		Args args = new Args("", new String[] { "-y" });
 
 		assertEquals(0, args.cardinality());
@@ -32,7 +32,7 @@ public class ArgsTest {
 	}
 
 	@Test
-	public void testBoolean_by_parameterNotIncludedKey() throws Exception {
+	void testBoolean_by_parameterNotIncludedKey() throws Exception {
 		Args args = new Args("x", new String[] { "-p" });
 
 		assertEquals(0, args.cardinality());
@@ -43,7 +43,7 @@ public class ArgsTest {
 	}
 
 	@Test
-	public void testBoolean_by_parameterIncludedKey() throws Exception {
+	void testBoolean_by_parameterIncludedKey() throws Exception {
 		Args args = new Args("x", new String[] { "-x" });
 
 		assertEquals(1, args.cardinality());
@@ -56,7 +56,7 @@ public class ArgsTest {
 	}
 
 	@Test
-	public void testBoolean_by_keyShowTwiceInParameter() throws Exception {
+	void testBoolean_by_keyShowTwiceInParameter() throws Exception {
 		Args args = new Args("x", new String[] { "-x", "-x" });
 
 		// 就算出現兩次，也會因為Map Key值重複所以只會顯示一次
@@ -71,7 +71,7 @@ public class ArgsTest {
 	}
 
 	@Test
-	public void testBoolean_by_OneRightOneFaultInParameter() throws Exception {
+	void testBoolean_by_OneRightOneFaultInParameter() throws Exception {
 		Args args = new Args("x", new String[] { "-x", "-y" });
 
 		assertEquals(1, args.cardinality());
@@ -84,7 +84,7 @@ public class ArgsTest {
 	}
 
 	@Test
-	public void testBoolean_by_parameterDoesntHaveDash() throws Exception {
+	void testBoolean_by_parameterDoesntHaveDash() throws Exception {
 		Args args = new Args("x", new String[] { "x" });
 
 		assertEquals(0, args.cardinality());
@@ -97,7 +97,7 @@ public class ArgsTest {
 	}
 
 	@Test
-	public void testBoolean_by_keyHaveDash() throws Exception {
+	void testBoolean_by_keyHaveDash() throws Exception {
 
 		assertThrows(ParseException.class, () -> {
 			Args args = new Args("-x", new String[] { "-x" });
@@ -116,7 +116,7 @@ public class ArgsTest {
 	}
 
 	@Test
-	public void testString_by_KeyisNull() throws Exception {
+	void testString_by_KeyisNull() throws Exception {
 
 		try {
 			Args args = new Args("*", new String[] { "-y" });
@@ -127,7 +127,7 @@ public class ArgsTest {
 	}
 
 	@Test
-	public void testString_by_parameterIncludedKey() throws ParseException {
+	void testString_by_parameterIncludedKey() throws ParseException {
 		Args args = new Args("x*", new String[] { "-x" });
 
 		assertEquals(1, args.cardinality());
@@ -138,7 +138,7 @@ public class ArgsTest {
 	}
 
 	@Test
-	public void testString_by_parameterNotIncludedKey() throws Exception {
+	void testString_by_parameterNotIncludedKey() throws Exception {
 		Args args = new Args("x*", new String[] { "-p" });
 
 		assertEquals(0, args.cardinality());
@@ -151,7 +151,7 @@ public class ArgsTest {
 	}
 
 	@Test
-	public void testString_by_keyShowTwiceInParameter() throws Exception {
+	void testString_by_keyShowTwiceInParameter() throws Exception {
 		Args args = new Args("x*", new String[] { "-x", "-x" });
 
 		assertEquals(1, args.cardinality());
@@ -162,7 +162,7 @@ public class ArgsTest {
 	}
 
 	@Test
-	public void testString_by_OneRightOneFaultInParameter() throws Exception {
+	void testString_by_OneRightOneFaultInParameter() throws Exception {
 		Args args = new Args("x*", new String[] { "-x", "-y" });
 
 		assertEquals(1, args.cardinality());
