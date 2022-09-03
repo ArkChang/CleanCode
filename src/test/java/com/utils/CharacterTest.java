@@ -1,14 +1,14 @@
-package com.cleancode.chapter14;
+package com.utils;
 
 import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
 import org.junit.jupiter.api.Test;
 
-public class CharacterTest {
+class CharacterTest {
 
 	@Test
-	public void test_Character_isLetter() {
+	void test_Character_isLetter() {
 		assertTrue(Character.isLetter('x'));
 		assertTrue(Character.isLetter('X'));
 		assertTrue(Character.isLetter('測'));

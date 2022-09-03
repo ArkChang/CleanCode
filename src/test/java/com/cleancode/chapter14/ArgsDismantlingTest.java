@@ -11,17 +11,17 @@ import org.junit.jupiter.api.Test;
 
 import com.cleancode.chapter14.practice.ArgsDismantling;
 
-public class ArgsDismantlingTest {
+class ArgsDismantlingTest {
 
 	@Test
-	public void testSimpleBooleanPresent() {
+	void testSimpleBooleanPresent() {
 		ArgsDismantling argsDismantling = new ArgsDismantling("x", new String[] { "-x" });
 		assertEquals(1, argsDismantling.cardinality());
 		assertEquals(true, argsDismantling.getBoolean('x'));
 	}
 
 	@Test
-	public void testBoolean_by_parameterNotIncludedKey() {
+	void testBoolean_by_parameterNotIncludedKey() {
 		ArgsDismantling argsDismantling = new ArgsDismantling("x", new String[] { "-p" });
 
 		assertEquals(0, argsDismantling.cardinality());
@@ -32,7 +32,7 @@ public class ArgsDismantlingTest {
 	}
 
 	@Test
-	public void testBoolean_by_parameterIncludedKey() {
+	void testBoolean_by_parameterIncludedKey() {
 		ArgsDismantling argsDismantling = new ArgsDismantling("x", new String[] { "-x" });
 
 		assertEquals(1, argsDismantling.cardinality());
@@ -44,7 +44,7 @@ public class ArgsDismantlingTest {
 	}
 
 	@Test
-	public void testBoolean_by_keyShowTwiceInParameter() {
+	void testBoolean_by_keyShowTwiceInParameter() {
 		ArgsDismantling argsDismantling = new ArgsDismantling("x", new String[] { "-x", "-x" });
 
 		assertEquals(2, argsDismantling.cardinality());
@@ -56,7 +56,7 @@ public class ArgsDismantlingTest {
 	}
 
 	@Test
-	public void testBoolean_by_parameterDoesntHaveDash() {
+	void testBoolean_by_parameterDoesntHaveDash() {
 		ArgsDismantling argsDismantling = new ArgsDismantling("x", new String[] { "x" });
 
 		assertEquals(0, argsDismantling.cardinality());
@@ -68,7 +68,7 @@ public class ArgsDismantlingTest {
 	}
 
 	@Test
-	public void testBoolean_by_keyHaveDash() {
+	void testBoolean_by_keyHaveDash() {
 		ArgsDismantling argsDismantling = new ArgsDismantling("-x", new String[] { "-x" });
 
 		assertEquals(0, argsDismantling.cardinality());
