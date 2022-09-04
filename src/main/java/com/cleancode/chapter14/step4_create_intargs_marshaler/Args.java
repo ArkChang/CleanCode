@@ -1,4 +1,4 @@
-package com.cleancode.chapter14.step3_refactoring;
+package com.cleancode.chapter14.step4_create_intargs_marshaler;
 
 import java.text.ParseException;
 import java.util.HashMap;
@@ -18,14 +18,16 @@ public class Args {
 	private String[] args; // 檢測參數
 	private boolean valid = true; // 執行結果
 	private Set<Character> unexpectedArguments = new TreeSet<>(); // 不符合預期的參數
-	private Map<Character, ArgumentMarshaler> booleanArgs = new HashMap<>(); // 是否存在的處理結果
-	private Map<Character, ArgumentMarshaler> stringArgs = new HashMap<>(); // 已存在的字串處理結果
+	private Map<Character, ArgumentMarshaler> booleanArgs = new HashMap<>(); // 參數是否有Boolean
+	private Map<Character, ArgumentMarshaler> stringArgs = new HashMap<>(); // 參數是否有字串
+	private Map<Character, ArgumentMarshaler> intArgs = new HashMap<>(); // 參數是否有數字
 	private Set<Character> argsFound = new HashSet<>(); // 陣列數
 	private int currentArgument;
 	private char errorArgumentId = '\0'; // 錯誤的字串
+	private String errorParameter = "TILT";
 
 	enum ErrorCode {
-		OK, MISSING_STRING
+		OK, MISSING_BOOLEAN, INVALID_BOOLEAN, MISSING_STRING, MISSING_INTEGER, INVALID_INTEGER
 	}
 
 	private ErrorCode errorCode = ErrorCode.OK;
@@ -58,8 +60,16 @@ public class Args {
 			return unexpectedArgumentMessage();
 		} else {
 			switch (errorCode) {
+			case MISSING_BOOLEAN:
+				return String.format("Could not find boolean parameter for -%c.", errorArgumentId);
+			case INVALID_BOOLEAN:
+				return String.format("Argument -%c expects an boolean but was '%s'.", errorArgumentId, errorParameter);
 			case MISSING_STRING:
 				return String.format("Could not find string parameter for -%c.", errorArgumentId);
+			case MISSING_INTEGER:
+				return String.format("Could not find integer parameter for -%c.", errorArgumentId);
+			case INVALID_INTEGER:
+				return String.format("Argument -%c expects an integer but was '%s'.", errorArgumentId, errorParameter);
 			case OK:
 				throw new Exception("TILT: Should not get here.");
 			}
@@ -81,6 +91,11 @@ public class Args {
 	public String getString(char arg) {
 		ArgumentMarshaler am = stringArgs.get(arg);
 		return am == null ? "" : am.getString();
+	}
+
+	public int getInt(char arg) {
+		ArgumentMarshaler am = intArgs.get(arg);
+		return am == null ? 0 : am.getInteger();
 	}
 
 	public boolean has(char arg) {
@@ -123,6 +138,8 @@ public class Args {
 			parseBooleanSchemaElement(elementId);
 		} else if (isStringSchemaElement(elementTail)) {
 			parseStringSchemaElement(elementId);
+		} else if (isIntegerSchemaElement(elementTail)) {
+			parseIntegerSchemaElement(elementId);
 		}
 	}
 
@@ -140,12 +157,20 @@ public class Args {
 		return elementTail.equals("*");
 	}
 
+	private boolean isIntegerSchemaElement(String elementTail) {
+		return elementTail.equals("#");
+	}
+
 	private void parseBooleanSchemaElement(char elementId) {
 		booleanArgs.put(elementId, new BooleanArgumentMarshaler());
 	}
 
 	private void parseStringSchemaElement(char elementId) {
 		stringArgs.put(elementId, new StringArgumentMarshaler());
+	}
+
+	private void parseIntegerSchemaElement(char elementId) {
+		intArgs.put(elementId, new IntegerArgumentMarshaler());
 	}
 
 	private boolean parseArguments() throws ArgsException {
@@ -180,9 +205,11 @@ public class Args {
 	private boolean setArgument(char argChar) throws ArgsException {
 		boolean set = true;
 		if (isBoolean(argChar)) {
-			setBooleanArg(argChar, true);
+			setBooleanArg(argChar);
 		} else if (isString(argChar)) {
 			setStringArg(argChar);
+		} else if (isInteger(argChar)) {
+			setIntegerArg(argChar);
 		} else {
 			set = false;
 		}
@@ -193,8 +220,25 @@ public class Args {
 		return booleanArgs.containsKey(argChar);
 	}
 
-	private void setBooleanArg(char argChar, boolean value) {
-		booleanArgs.get(argChar).setBoolean(value);
+	private void setBooleanArg(char argChar) throws ArgsException {
+		currentArgument++;
+		String parameter = null;
+		try {
+			parameter = args[currentArgument];
+			booleanArgs.get(argChar).setBoolean(Boolean.parseBoolean(parameter));
+		} catch (ArrayIndexOutOfBoundsException e) {
+			valid = false;
+			errorArgumentId = argChar;
+			errorCode = ErrorCode.MISSING_BOOLEAN;
+			throw new ArgsException();
+
+		} catch (NumberFormatException e) {
+			valid = false;
+			errorArgumentId = argChar;
+			errorParameter = parameter;
+			errorCode = ErrorCode.INVALID_BOOLEAN;
+			throw new ArgsException();
+		}
 	}
 
 	private boolean isString(char argChar) {
@@ -202,6 +246,7 @@ public class Args {
 	}
 
 	private void setStringArg(char argChar) throws ArgsException {
+		currentArgument++;
 		try {
 			stringArgs.get(argChar).setString(args[currentArgument]);
 		} catch (ArrayIndexOutOfBoundsException e) {
@@ -210,7 +255,31 @@ public class Args {
 			errorCode = ErrorCode.MISSING_STRING;
 			throw new ArgsException();
 		}
+	}
+
+	private boolean isInteger(char argChar) {
+		return intArgs.containsKey(argChar);
+	}
+
+	private void setIntegerArg(char argChar) throws ArgsException {
 		currentArgument++;
+		String parameter = null;
+		try {
+			parameter = args[currentArgument];
+			intArgs.get(argChar).setInteger(Integer.parseInt(parameter));
+		} catch (ArrayIndexOutOfBoundsException e) {
+			valid = false;
+			errorArgumentId = argChar;
+			errorCode = ErrorCode.MISSING_INTEGER;
+			throw new ArrayIndexOutOfBoundsException();
+
+		} catch (NumberFormatException e) {
+			valid = false;
+			errorArgumentId = argChar;
+			errorParameter = parameter;
+			errorCode = ErrorCode.INVALID_INTEGER;
+			throw new NumberFormatException();
+		}
 	}
 
 	private String unexpectedArgumentMessage() {
@@ -229,6 +298,7 @@ public class Args {
 	private class ArgumentMarshaler {
 		private boolean booleanValue = false;
 		private String stringValue;
+		private int integerValue;
 
 		public void setBoolean(boolean value) {
 			this.booleanValue = value;
@@ -238,12 +308,20 @@ public class Args {
 			return booleanValue;
 		}
 
-		public void setString(String s) {
-			this.stringValue = s;
+		public void setString(String value) {
+			this.stringValue = value;
 		}
 
 		public String getString() {
 			return stringValue == null ? "" : stringValue;
+		}
+
+		public void setInteger(int value) {
+			this.integerValue = value;
+		}
+
+		public int getInteger() {
+			return integerValue;
 		}
 
 	}
