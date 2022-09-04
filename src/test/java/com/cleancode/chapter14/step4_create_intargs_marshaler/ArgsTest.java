@@ -228,7 +228,7 @@ class ArgsTest {
 			new Args("-x*", new String[] { "-x", "xyz" });
 		});
 	}
-	
+
 	@Test
 	void testInteger_whenOneKey() throws Exception {
 		Args args = new Args("x#", new String[] { "-x", "123" });
@@ -244,7 +244,7 @@ class ArgsTest {
 		assertEquals(true, args.isValid());
 
 	}
-	
+
 	@Test
 	void testInteger_whenTwoKey() throws Exception {
 		Args args = new Args("x#,y#", new String[] { "-xy", "123", "456" });
@@ -262,7 +262,7 @@ class ArgsTest {
 		assertEquals(true, args.isValid());
 
 	}
-	
+
 	@Test
 	void testInteger_whenOneKeyAndTwoParameter() throws Exception {
 		Args args = new Args("x#", new String[] { "-x", "123", "456" });
@@ -278,7 +278,7 @@ class ArgsTest {
 		assertEquals(true, args.has('x'));
 		assertEquals(true, args.isValid());
 	}
-	
+
 	@Test
 	void testInteger_whenKeyisNull() throws Exception {
 		Args args = new Args("", new String[] { "-x", "123" });
@@ -291,7 +291,7 @@ class ArgsTest {
 		assertEquals(false, args.isValid());
 
 	}
-	
+
 	@Test
 	void testInteger_whenParameterNotIncludedKey() throws Exception {
 		Args args = new Args("x#", new String[] { "-p", "123" });
@@ -303,14 +303,14 @@ class ArgsTest {
 		assertEquals(false, args.has('x'));
 		assertEquals(false, args.isValid());
 	}
-	
+
 	@Test
 	void testInteger_whenInvalidInteger() throws Exception {
 		assertThrows(NumberFormatException.class, () -> {
 			new Args("x#", new String[] { "-x", "Truthy" });
 		});
 	}
-	
+
 	@Test
 	void testInteger_whenParameterDoesntHaveDash() throws Exception {
 		Args args = new Args("x#", new String[] { "x", "123" });
@@ -326,7 +326,7 @@ class ArgsTest {
 		assertEquals(false, args.has('x'));
 		assertEquals(true, args.isValid());
 	}
-	
+
 	@Test
 	void testInteger_whenKeyHaveDash() throws Exception {
 		assertThrows(ParseException.class, () -> {
